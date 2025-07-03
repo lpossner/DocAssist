@@ -9,6 +9,7 @@ from vector_database import (
     get_pdf_documents_,
     query_documents_,
     query_pdf_documents_,
+    delete_all_documents_
 )
 
 from pdf_parser import chunk_pdf_
@@ -64,17 +65,14 @@ def stream_answer():
     system_prompt = f"""
     You are a helpful assistant that helps solve technical problems.
     If you are not sure in whatever you answer, say that you don't know.
-    Answer in maximum 5 sentences.
     You have the following information from the user available.
     Refer to it as user information:{"\n".join(documents)}
     You have the following information from literature available.
     The page number is in front of the information. 
-    Refer to if as literature information and always say from which page it is:{"\n".join(pdf_documents)}
+    Refer to it as literature information:{"\n".join(pdf_documents)}
+    Always mention the page where you found the information.
     Always prefer the user information over the literature information if its relevant.
-    Mention it if its relevant.
     """
-    # print(system_prompt)
-    # system_prompt = SYSTEM_PROMPT
 
     # Payload for the external API
     payload = {
@@ -83,7 +81,7 @@ def stream_answer():
             {"role": "system", "content": f"{system_prompt}"},
             {"role": "user", "content": user_question},
         ],
-        "temperature": 0.3,
+        "temperature": 0.1,
         "max_tokens": -1,
         "stream": True,
     }
@@ -186,7 +184,7 @@ def query_documents():
     queries = documents = request.json.get("queries")
     documents = query_documents_(queries)
     if not documents:
-        return jsonify({"error": "Document could not be queried"}), 400
+        return jsonify({"error": "Documents could not be queried"}), 400
     return jsonify(documents), 200
 
 
@@ -197,6 +195,14 @@ def query_pdf_documents():
     if not documents:
         return jsonify({"error": "Documents could not be queried"}), 400
     return jsonify(documents), 200
+
+
+@app.route("/documents", methods=["DELETE"])
+def delete_documents():
+    status = delete_all_documents_()
+    if not status:
+        return jsonify({"error": "Documents could not deleted"}), 400
+    return jsonify({"status": "Documents deleted"}), 200
 
 
 if __name__ == "__main__":

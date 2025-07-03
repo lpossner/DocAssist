@@ -61,3 +61,9 @@ def query_documents_(query_texts):
 def query_pdf_documents_(query_texts):
     collection = client.get_or_create_collection("pdf_documents")
     return collection.query(query_texts=query_texts, n_results=2)
+
+
+def delete_all_documents_():
+    collection = client.get_or_create_collection("documents")
+    collection.delete(ids=collection.get()['ids'])
+    return True
