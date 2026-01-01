@@ -1,7 +1,5 @@
 # DocAssist
 
-> An AI-powered assistant for documenting and retrieving technical information in operative industrial environments
-
 DocAssist is a Flask-based web application that combines voice recording, document management, and AI-powered question answering to help industrial workers quickly access and document technical information in the field.
 
 ## Features
@@ -39,12 +37,12 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 │  REST API        │
 └────────┬─────────┘
          │
-    ┌────┴────┬──────────┬──────────┐
-    ▼         ▼          ▼          ▼
-┌──────────┐ ┌────────┐ ┌─────────┐ ┌──────────┐
-│  Whisper │ │ Vector │ │  PDF    │ │  Local   │
-│  Model   │ │   DB   │ │  Parser │ │  LLM     │
-└──────────┘ └────────┘ └─────────┘ └──────────┘
+      ┌──┴────────┬────────────┬────────────┐
+      ▼           ▼            ▼            ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐  ┌─────────┐
+│  Whisper │ │  Vector  │ │  PDF     │  │  Local  │
+│  Model   │ │  DB      │ │  Parser  │  │  LLM    │
+└──────────┘ └──────────┘ └──────────┘  └─────────┘
 ```
 
 ## Prerequisites
@@ -58,31 +56,22 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/lpossner/DocAssist
 cd docassist
 ```
 
-2. Install uv if you haven't already:
+2. Install dependencies:
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-3. Install dependencies using uv:
-```bash
+pip install uv
 uv sync
 ```
 
-This will automatically:
-- Create a virtual environment
-- Install all required dependencies (Flask, ChromaDB, faster-whisper, sounddevice, numpy, PyMuPDF, tqdm, requests)
-- Use the correct Python version (3.10)
-
-4. Create necessary directories:
+3. Create necessary directories:
 ```bash
 mkdir uploads
 ```
 
-5. Set up a local LLM server:
+4. Set up a local LLM server:
    - Install [LM Studio](https://lmstudio.ai/) or similar
    - Load the an LLM of your choice
    - Start the server on port 1234
@@ -184,8 +173,4 @@ UPLOAD_FOLDER = "uploads"
 
 ## License
 
-This project is provided as-is for use in industrial documentation scenarios.
-
-## Contributing
-
-Contributions are welcome. Please ensure all changes maintain compatibility with the existing API structure and include appropriate error handling.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
