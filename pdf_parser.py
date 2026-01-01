@@ -10,6 +10,10 @@ def chunk_pdf_(path):
     for page in doc:
         texts.append(page.get_text("text"))
 
+    # If no bookmarks, treat entire document as one chapter
+    if not bookmarks:
+        return [texts], [list(range(1, len(texts) + 1))], [["Entire Document"]]
+
     # Extract full chapter titles
     chapter_titles = []
     page_numbers = []
@@ -35,7 +39,10 @@ def chunk_pdf_(path):
     for page_number_start, page_number_stop in zip(page_numbers, page_numbers[1:]):
         chapter_pages.append(texts[page_number_start - 1: page_number_stop - 1])
         chapter_page_numbers.append(list(range(page_number_start, page_number_stop)))
-    chapter_pages.append(chapter_page_numbers[page_number_start: page_number_stop])
-    chapter_page_numbers.append(list(range(page_number_start + 1, page_number_stop + 1)))
+    # Handle the last chapter (from last bookmark to end of document)
+    if page_numbers:
+        last_page_number = page_numbers[-1]
+        chapter_pages.append(texts[last_page_number - 1:])
+        chapter_page_numbers.append(list(range(last_page_number, len(texts) + 1)))
 
     return chapter_pages, chapter_page_numbers, chapter_titles

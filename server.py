@@ -62,14 +62,16 @@ def stream_answer():
     pdf_documents = [
         f"Page {page}: {document}" for page, document in zip(pdf_pages, pdf_documents)
     ]
+    documents_text = "\n".join(documents)
+    pdf_documents_text = "\n".join(pdf_documents)
     system_prompt = f"""
     You are a helpful assistant that helps solve technical problems.
     If you are not sure in whatever you answer, say that you don't know.
     You have the following information from the user available.
-    Refer to it as user information:{"\n".join(documents)}
+    Refer to it as user information:{documents_text}
     You have the following information from literature available.
-    The page number is in front of the information. 
-    Refer to it as literature information:{"\n".join(pdf_documents)}
+    The page number is in front of the information.
+    Refer to it as literature information:{pdf_documents_text}
     Always mention the page where you found the information.
     Always prefer the user information over the literature information if its relevant.
     """

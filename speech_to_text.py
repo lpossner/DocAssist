@@ -4,7 +4,7 @@ import sounddevice as sd
 
 import numpy as np
 
-import whisper
+from faster_whisper import WhisperModel
 
 
 # Shared state for recording
@@ -17,7 +17,8 @@ CHANNELS = 1
 recording_lock = threading.Lock()
 
 # Whisper model loading (only once to save time)
-model = whisper.load_model("small", in_memory=True)
+# Options: tiny, base, small, medium, large-v2, large-v3
+model = WhisperModel("small", device="cpu", compute_type="int8")
 
 # Audio stream reference
 audio_stream = None
@@ -72,19 +73,41 @@ def stop_recording_():
     if len(audio_data) == 0:
         return None
 
-    result = model.transcribe(
-        audio_data, fp16=False, initial_prompt="The text is in English."
+    # faster-whisper returns segments as a generator
+    segments, info = model.transcribe(
+        audio_data, language="en", initial_prompt="The text is in English."
     )
 
-    if not result["segments"]:
+    # Convert generator to list to process segments
+    segments_list = list(segments)
+
+    if not segments_list:
         return None
 
-    avg_logprobs = [segment["avg_logprob"] for segment in result["segments"]]
+    # Check average log probability
+    avg_logprobs = [segment.avg_logprob for segment in segments_list]
     if sum(avg_logprobs) / len(avg_logprobs) < -3:
         return None
 
-    no_speech_probs = [segment["no_speech_prob"] for segment in result["segments"]]
+    # Check no speech probability
+    no_speech_probs = [segment.no_speech_prob for segment in segments_list]
     if sum(no_speech_probs) / len(no_speech_probs) > 0.5:
         return None
+
+    # Convert to format compatible with original code
+    result = {
+        "text": " ".join([segment.text for segment in segments_list]),
+        "segments": [
+            {
+                "text": segment.text,
+                "start": segment.start,
+                "end": segment.end,
+                "avg_logprob": segment.avg_logprob,
+                "no_speech_prob": segment.no_speech_prob,
+            }
+            for segment in segments_list
+        ],
+        "language": info.language,
+    }
 
     return result

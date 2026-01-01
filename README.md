@@ -8,7 +8,7 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 
 ### Voice-to-Text Recording
 - Real-time audio recording with automatic speech-to-text transcription
-- Uses OpenAI's Whisper model for accurate transcription
+- Uses faster-whisper (optimized Whisper implementation) for accurate transcription
 - Quality filtering based on confidence scores and speech detection
 
 ### Document Management
@@ -49,7 +49,8 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 
 ## Prerequisites
 
-- Python 3.8+
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) - Fast Python package installer and resolver
 - Local LLM server running on `http://localhost:1234` (e.g., LM Studio with Mistral Nemo)
 - Audio input device for voice recording
 
@@ -61,17 +62,27 @@ git clone <repository-url>
 cd docassist
 ```
 
-2. Install required dependencies:
+2. Install uv if you haven't already:
 ```bash
-pip install flask chromadb openai-whisper sounddevice numpy PyMuPDF tqdm requests
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Create necessary directories:
+3. Install dependencies using uv:
+```bash
+uv sync
+```
+
+This will automatically:
+- Create a virtual environment
+- Install all required dependencies (Flask, ChromaDB, faster-whisper, sounddevice, numpy, PyMuPDF, tqdm, requests)
+- Use the correct Python version (3.10)
+
+4. Create necessary directories:
 ```bash
 mkdir uploads
 ```
 
-4. Set up a local LLM server:
+5. Set up a local LLM server:
    - Install [LM Studio](https://lmstudio.ai/) or similar
    - Load the Mistral Nemo Instruct 2407 model
    - Start the server on port 1234
@@ -81,6 +92,12 @@ mkdir uploads
 ### Starting the Server
 
 ```bash
+uv run python server.py
+```
+
+Or activate the virtual environment first:
+```bash
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 python server.py
 ```
 
@@ -111,7 +128,7 @@ The application will be available at `http://localhost:5000`
 
 ### 1. Speech-to-Text ([speech_to_text.py](speech_to_text.py))
 - Captures audio at 16kHz using `sounddevice`
-- Transcribes with Whisper "small" model
+- Transcribes with faster-whisper (optimized Whisper implementation)
 - Filters low-quality transcriptions automatically
 
 ### 2. PDF Processing ([pdf_parser.py](pdf_parser.py))
@@ -139,9 +156,10 @@ LLM_API_URL = "http://localhost:1234/api/v0/chat/completions"
 ```
 
 ### Model Selection
-Change the Whisper model size in [speech_to_text.py](speech_to_text.py):
+Change the faster-whisper model size in [speech_to_text.py](speech_to_text.py):
 ```python
-model = whisper.load_model("small", in_memory=True)  # Options: tiny, base, small, medium, large
+# Options: tiny, base, small, medium, large-v2, large-v3
+model = WhisperModel("small", device="cpu", compute_type="int8")
 ```
 
 ### Upload Directory
