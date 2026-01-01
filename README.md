@@ -27,24 +27,24 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 ## Architecture
 
 ```
-┌─────────────────┐
-│  Web Frontend   │  (static/index.html)
-│  - Voice Input  │
-│  - Q&A Interface│
-└────────┬────────┘
+┌──────────────────┐
+│  Web Frontend    │  (static/index.html)
+│  - Voice Input   │
+│  - Q&A Interface │
+└────────┬─────────┘
          │
          ▼
-┌─────────────────┐
-│  Flask Server   │  (server.py)
-│  REST API       │
-└────────┬────────┘
+┌──────────────────┐
+│  Flask Server    │  (server.py)
+│  REST API        │
+└────────┬─────────┘
          │
-    ┌────┴────┬──────────┬─────────────┐
-    ▼         ▼          ▼             ▼
-┌────────┐ ┌──────┐ ┌─────────┐ ┌──────────┐
-│Whisper │ │Vector│ │  PDF    │ │Local LLM │
-│ Model  │ │  DB  │ │ Parser  │ │(Mistral) │
-└────────┘ └──────┘ └─────────┘ └──────────┘
+    ┌────┴────┬──────────┬──────────┐
+    ▼         ▼          ▼          ▼
+┌──────────┐ ┌────────┐ ┌─────────┐ ┌──────────┐
+│  Whisper │ │ Vector │ │  PDF    │ │  Local   │
+│  Model   │ │   DB   │ │  Parser │ │  LLM     │
+└──────────┘ └────────┘ └─────────┘ └──────────┘
 ```
 
 ## Prerequisites
@@ -84,7 +84,7 @@ mkdir uploads
 
 5. Set up a local LLM server:
    - Install [LM Studio](https://lmstudio.ai/) or similar
-   - Load the Mistral Nemo Instruct 2407 model
+   - Load the an LLM of your choice
    - Start the server on port 1234
 
 ## Usage
