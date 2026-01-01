@@ -51,7 +51,7 @@ DocAssist is a Flask-based web application that combines voice recording, docume
 
 - Python 3.10+
 - [uv](https://docs.astral.sh/uv/) - Fast Python package installer and resolver
-- Local LLM server running on `http://localhost:1234` (e.g., LM Studio with Mistral Nemo)
+- Local LLM server running on `http://localhost:1234` (e.g., LM Studio)
 - Audio input device for voice recording
 
 ## Installation
